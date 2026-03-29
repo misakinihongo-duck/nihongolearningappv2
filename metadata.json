@@ -1,0 +1,5 @@
+{
+  "name": "NIHONGO AI Assistant",
+  "description": "日本語学習支援Webアプリ。作文添削、ふりがな表示、JLPTレベル別リライト、クイズ生成機能を備えたMVP。",
+  "requestFramePermissions": []
+}

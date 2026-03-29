@@ -1,0 +1,82 @@
+{
+  "entities": {
+    "Writing": {
+      "title": "Writing",
+      "description": "生徒の作文データ",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "作文のタイトル" },
+        "content": { "type": "string", "description": "現在の作文本文" },
+        "originalContent": { "type": "string", "description": "最初の作文本文" },
+        "correctedContent": { "type": "string", "description": "先生による添削後の本文" },
+        "furiganaContent": { "type": "string", "description": "ふりがな付きのHTML/Markdown" },
+        "vocabularyList": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "word": { "type": "string" },
+              "reading": { "type": "string" },
+              "meaning": { "type": "string" }
+            }
+          }
+        },
+        "authorId": { "type": "string", "description": "作成者のUID" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "content", "authorId", "createdAt"]
+    },
+    "Quiz": {
+      "title": "Quiz",
+      "description": "生成されたクイズデータ",
+      "type": "object",
+      "properties": {
+        "topic": { "type": "string", "description": "クイズのトピック（文法・語彙）" },
+        "level": { "type": "string", "description": "JLPTレベル" },
+        "questions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "question": { "type": "string" },
+              "options": { "type": "array", "items": { "type": "string" } },
+              "answerIndex": { "type": "integer" },
+              "explanation": { "type": "string" }
+            }
+          }
+        },
+        "authorId": { "type": "string", "description": "作成者のUID" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["topic", "level", "questions", "authorId", "createdAt"]
+    },
+    "Article": {
+      "title": "Article",
+      "description": "リライトされた記事データ",
+      "type": "object",
+      "properties": {
+        "originalUrl": { "type": "string" },
+        "originalText": { "type": "string" },
+        "rewrittenText": { "type": "string" },
+        "level": { "type": "string" },
+        "authorId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["rewrittenText", "level", "authorId", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/writings/{writingId}": {
+      "schema": "Writing",
+      "description": "作文コレクション"
+    },
+    "/quizzes/{quizId}": {
+      "schema": "Quiz",
+      "description": "クイズコレクション"
+    },
+    "/articles/{articleId}": {
+      "schema": "Article",
+      "description": "リライト記事コレクション"
+    }
+  }
+}

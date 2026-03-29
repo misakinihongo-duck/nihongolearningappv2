@@ -1,0 +1,63 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    // Collection: writings
+    // Fields: title, content, originalContent, correctedContent, furiganaContent, vocabularyList, authorId, createdAt
+    //
+    // Collection: quizzes
+    // Fields: topic, level, questions, authorId, createdAt
+    //
+    // Collection: articles
+    // Fields: originalUrl, originalText, rewrittenText, level, authorId, createdAt
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(authorId) {
+      return isAuthenticated() && request.auth.uid == authorId;
+    }
+
+    function isValidWriting(data) {
+      return data.title is string && data.title.size() > 0 && data.title.size() < 200 &&
+             data.content is string && data.content.size() < 10000 &&
+             data.authorId == request.auth.uid;
+    }
+
+    function isValidQuiz(data) {
+      return data.topic is string && data.level is string &&
+             data.questions is list && data.authorId == request.auth.uid;
+    }
+
+    function isValidArticle(data) {
+      return data.rewrittenText is string && data.level is string &&
+             data.authorId == request.auth.uid;
+    }
+
+    match /writings/{writingId} {
+      allow read: if isOwner(resource.data.authorId);
+      allow create: if isAuthenticated() && isValidWriting(request.resource.data);
+      allow update: if isOwner(resource.data.authorId) && isValidWriting(request.resource.data);
+      allow delete: if isOwner(resource.data.authorId);
+    }
+
+    match /quizzes/{quizId} {
+      allow read: if isOwner(resource.data.authorId);
+      allow create: if isAuthenticated() && isValidQuiz(request.resource.data);
+      allow update: if isOwner(resource.data.authorId) && isValidQuiz(request.resource.data);
+      allow delete: if isOwner(resource.data.authorId);
+    }
+
+    match /articles/{articleId} {
+      allow read: if isOwner(resource.data.authorId);
+      allow create: if isAuthenticated() && isValidArticle(request.resource.data);
+      allow update: if isOwner(resource.data.authorId) && isValidArticle(request.resource.data);
+      allow delete: if isOwner(resource.data.authorId);
+    }
+  }
+}
